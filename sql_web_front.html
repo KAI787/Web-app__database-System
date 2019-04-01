@@ -13,24 +13,48 @@
 	    border: 1px solid black;
 	}
 	</style>
-	
+	<script type="text/javascript">
+		var c=0
+		var t
+		function timedCount()
+		{
+			document.getElementById('txt').innerHTML=c
+			c=c+1
+			t=setTimeout("timedCount()",1000)
+		}
+	</script>
 
 	<title>CS 539</title>
-	                                
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">  
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>                                
 
 </head>
+
 <body onload="timedCount()">
+	<p></p>
 	<label>
-	     <input type="radio" name="clickIn" value="clickIn" id="mysql"/>MySql
-	     <input type="radio" name="clickIn" value="clickIn" id="redshift"/>RedShift
+	     <input type="radio" name="clickIn" value="clickIn" id="mysql"/><span class="badge alert-danger">SQL_server</span>
+	     <input type="radio" name="clickIn" value="clickIn" id="redshift"/><span class="badge alert-danger">  BigQuery  </span>
 	</label>
-	<p>Query</p>
+	<h3>
+		<span class="label label-success">Query</span>
+	</h3>
 
 	<div class="query">
-		<textarea class="comments" type="text" placeholder="Please input your SQL here." rows="20" cols="50"></textarea>
-		<br>
-	  	<button>Query</button>
-	  	<span style="text-align:right;">Time Elapsed </span>
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<h3 class="panel-title">Please input your SQL here.</h3>
+			</div>
+			<div class="panel-body" style="height:200px;">
+				<textarea class="comments" type="text" placeholder="" rows="8" cols="50"></textarea>
+			</div>
+		</div>	<br>
+		
+	  	<button type="button" class="btn btn-default btn-lg btn-success">
+	  		<span class="glyphicon glyphicon-sort-by-attributes"></span> Query
+	  	</button>
+	  	
 		<br>
 	</div>
 	
@@ -54,32 +78,33 @@
 			var module="1";
 			
 			if(document.getElementById('mysql').checked){
-				module="mysql";
+				module="sql_server";
 			}
 			else{
 				if(document.getElementById('redshift').checked){
-					module="redshift";
+					module="bigquery";
 				}		
 			}
 
 		
 			let sqltxt = $('.query > textarea').val().trim()
 			if(!sqltxt) return false;
-			var sendDate = (new Date()).getTime();
 			$.ajax({
-				url:'http://localhost:8080/project_1/servletdemo',
+				url: "http://localhost:8080/project2_test1/servletdemo",
+				
 				method:'get',
 				async:false,
-				dataType:'json',
+				//dataType:'json',
 				data:{
 					"sql":sqltxt,
 	                "module":module.toString()                
                 }
 			}).done(function(res){
-				//alert(JSON.stringify(res))  //TEST OUTPUT
+				alert('success test')  //TEST OUTPUT
+				
 				var html;
 				var object;
-				
+					
 				//TITLE
 				html += "<tr>";
 				$.each(res,function(i,val){
@@ -104,20 +129,12 @@
 	                });
 	                html += "</tr>";
 	            });
-
-	            //show Time Elapsed
-	            var receiveDate = (new Date()).getTime();
-        		var responseTimeMs = receiveDate - sendDate;
-				$("span").html(responseTimeMs + "ms");
-
 	 			$("#table1").html(html);
+	 			
+	 			
+	 			
 
 			}).fail(function(err){
-				//show Time Elapsed
-				var receiveDate = (new Date()).getTime();
-        		var responseTimeMs = receiveDate - sendDate;
-				$("span").html(responseTimeMs + "ms");
-
 				alert("Invalid SQL Statement")
 			})
 		})
